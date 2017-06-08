@@ -1,0 +1,32 @@
+#include <stdio.h>
+#include <nucleo.h>
+
+void far processo1()
+{
+	long int i = 0;
+	while(i < 100000)
+	{
+           printf("@");
+           i++;
+	}
+	terminar_Processo();
+}
+
+void far processo2()
+{
+	long int i = 0;
+	while(i < 100000)
+        {
+           printf("X");
+           i++;
+	}
+	terminar_Processo();
+}
+
+main()
+{
+	criar_Processo(processo1, "Processo @");
+	criar_Processo(processo2, "Processo X");
+	dispara_sistema();
+}
+

@@ -1,0 +1,41 @@
+#include <stdio.h>
+#include <dos.h> far
+#include <setjmp.h>
+#include <alloc.h>
+#include <stdlib.h>
+
+#define MAX_PILHA  1000      /* tamanho maximo da pilha do contexto */
+
+typedef struct {             /* Estrutura usada para armazenar o contexto */
+    unsigned ss,sp;          /* Apontador de segmento  de pilha e do topo */
+    unsigned area[MAX_PILHA];/* Area reservada para pilha                 */
+    unsigned base;           /* Base da pilha                             */
+    }descritor;
+
+typedef descritor *PTR_DESC;  /* TIPO PONTEIRO PARA TIPO DESCRITOR */
+
+typedef struct {                    /* Estrutura usada pelo iotransfer()  */
+    PTR_DESC p_origem,p_destino;    /* Endereco do chamador e do processo */
+                                    /* destino do iotransfer()            */
+    int num_vetor;                  /* Numero do vetor onde sera instalada*/
+                                    /* a rotina de retorno                */
+    void interrupt (*int_anterior)(); /* Endereco da rotina antiga        */
+    } estrutura_io;
+
+typedef estrutura_io *PTR_ESTR; /* tipo pontei+ro para estrutura_io */
+
+extern estrutura_io est_io1;     /* declara a variavel global  usada pelo */
+                                 /* iotransfer()                          */
+
+extern PTR_ESTR p_est=&est_io1;        /* Inicializa o ponteiro para estrutura  */
+                                        /* usada pelo iotransfer()               */
+
+extern void far transfer(PTR_DESC or,PTR_DESC dest);
+
+
+extern void  far newprocess(void far(*proc)(),PTR_DESC end_desc);
+
+extern PTR_DESC cria_desc();
+
+extern void far iotransfer();
+
