@@ -11,15 +11,17 @@ typedef struct desc_process
 }DESCRITOR_PROC;
 
 typedef DESCRITOR_PROC *PTR_DESC_PROC;
-PTR_DESC_PROC prim = NULL;
-PTR_DESC d_esc;
 
-void far volta_dos();
+extern PTR_DESC_PROC prim;
+extern PTR_DESC d_esc;
 
-void far criar_Processo(void far (*end_proc)(), char nome[35]);
+extern void far volta_dos();
 
-void far escalador();
+extern void far criar_Processo(void far (*end_proc)(), char nome[35]);
 
-void far dispara_sistema();
+extern void far escalador();
 
-void far terminar_Processo();
+extern void far dispara_sistema();
+
+extern void far terminar_Processo();
+

@@ -15,7 +15,7 @@ void far tic()
 void far tac()
 {
      int i = 0;
-     while(i < 100)
+     while(i < 50)
      {
          printf("tac");
          transfer(dtac, dtic);
@@ -33,3 +33,4 @@ void main()
      dmain = cria_desc();
      transfer(dmain, dtic);
 }
+

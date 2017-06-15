@@ -1,9 +1,24 @@
-#include <nucleo.h>
+#include <system.h>
+#include <stdio.h>
+#include <string.h>
+
+typedef struct desc_process
+{
+	char nome[35];
+	enum {ativo, terminado} estado;
+	PTR_DESC contexto;
+	struct desc_process *prox_desc;
+}DESCRITOR_PROC;
+
+typedef DESCRITOR_PROC *PTR_DESC_PROC;
+
+PTR_DESC_PROC prim = NULL;
+PTR_DESC d_esc;
 
 PTR_DESC_PROC procura_prox_ativo()
 {
 	PTR_DESC_PROC p_aux;
-	
+
 	if(prim == NULL) return NULL;
 	p_aux = prim;
 	do
@@ -71,7 +86,7 @@ void far escalador()
 void far dispara_sistema()
 {
 	PTR_DESC d_dispara;
-	d_dispara = cria_desc();
+        d_dispara = cria_desc();
 	d_esc = cria_desc();
 	newprocess(escalador, d_esc);
 	transfer(d_dispara, d_esc);
@@ -87,3 +102,4 @@ void far terminar_Processo()
 		volta_dos();
 	transfer(p_aux->contexto, prim->contexto);
 }
+
