@@ -23,9 +23,9 @@ PTR_DESC_PROC procura_prox_ativo()
 	p_aux = prim;
 	do
 	{
+		p_aux = p_aux->prox_desc;
 		if(p_aux->estado == ativo)
 			return p_aux;
-		p_aux = p_aux->prox_desc;
 	}while(p_aux != prim);
 	return NULL;
 }
