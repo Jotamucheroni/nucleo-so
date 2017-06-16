@@ -12,6 +12,17 @@ typedef struct desc_process
 
 typedef DESCRITOR_PROC *PTR_DESC_PROC;
 
+typedef struct registros{
+	unsigned bx1,es1;
+}regis;
+
+typedef union k{
+	regis x;
+	char far *y;
+}APONTA_REG_CRIT;
+
+extern APONTA_REG_CRIT a;
+
 extern PTR_DESC_PROC prim;
 extern PTR_DESC d_esc;
 

@@ -12,6 +12,17 @@ typedef struct desc_process
 
 typedef DESCRITOR_PROC *PTR_DESC_PROC;
 
+typedef struct registros{
+	unsigned bx1,es1;
+}regis;
+
+typedef union k{
+	regis x;
+	char far *y;
+}APONTA_REG_CRIT;
+
+APONTA_REG_CRIT a;
+
 PTR_DESC_PROC prim = NULL;
 PTR_DESC d_esc;
 
@@ -72,13 +83,24 @@ void far escalador()
         p_est->p_destino = prim->contexto;
         p_est->num_vetor = 8;
 
+        /*Inicia ponteiro para R.C. do DOS*/
+        _AH=0x34;
+        _AL=0x00;
+        geninterrupt(0x21);
+        a.x.bx1=_BX;
+        a.x.es1=_ES;
+
         while(1)
 	{
 		iotransfer();
 		disable();
-		if( (prim = procura_prox_ativo()) == NULL)
-			volta_dos();
-		p_est->p_destino = prim->contexto;
+		/* se nucleo nao estiver na R.C. troca o processo*/
+		if (!*a.y)
+		{
+			if( (prim = procura_prox_ativo()) == NULL)
+				volta_dos();
+			p_est->p_destino = prim->contexto;
+		}
 		enable();
 	}
 }
