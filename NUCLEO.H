@@ -5,9 +5,10 @@
 typedef struct desc_process
 {
 	char nome[35];
-	enum {ativo, terminado} estado;
+	enum {ativo, bloq_P, terminado} estado;
 	PTR_DESC contexto;
 	struct desc_process *prox_desc;
+	struct desc_process *fila_sem;
 }DESCRITOR_PROC;
 
 typedef DESCRITOR_PROC *PTR_DESC_PROC;
@@ -21,10 +22,20 @@ typedef union k{
 	char far *y;
 }APONTA_REG_CRIT;
 
+typedef struct semaforo
+{
+	int s;
+	PTR_DESC_PROC Q;
+}SEMAFORO;
+
 extern APONTA_REG_CRIT a;
 
 extern PTR_DESC_PROC prim;
+
 extern PTR_DESC d_esc;
+
+/*Rotinas basicas-------------------------------------------------------
+----------------------------------------------------------------------*/
 
 extern void far volta_dos();
 
@@ -35,4 +46,19 @@ extern void far escalador();
 extern void far dispara_sistema();
 
 extern void far terminar_Processo();
+
+/*----------------------------------------------------------------------
+----------------------------------------------------------------------*/
+
+/*Comunicacao e sincronizacao entre processos---------------------------
+----------------------------------------------------------------------*/
+
+extern void far inicia_semaforo(SEMAFORO *sem, int n);
+
+extern void far P(SEMAFORO *sem);
+
+extern void far V(SEMAFORO *sem);
+
+/*----------------------------------------------------------------------
+----------------------------------------------------------------------*/
 

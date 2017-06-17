@@ -5,9 +5,10 @@
 typedef struct desc_process
 {
 	char nome[35];
-	enum {ativo, terminado} estado;
+	enum {ativo, bloq_P, terminado} estado;
 	PTR_DESC contexto;
 	struct desc_process *prox_desc;
+	struct desc_process *fila_sem;
 }DESCRITOR_PROC;
 
 typedef DESCRITOR_PROC *PTR_DESC_PROC;
@@ -21,10 +22,19 @@ typedef union k{
 	char far *y;
 }APONTA_REG_CRIT;
 
+typedef struct semaforo
+{
+	int s;
+	PTR_DESC_PROC Q;
+}SEMAFORO;
+
 APONTA_REG_CRIT a;
 
 PTR_DESC_PROC prim = NULL;
 PTR_DESC d_esc;
+
+/*Rotinas basicas-------------------------------------------------------
+----------------------------------------------------------------------*/
 
 PTR_DESC_PROC procura_prox_ativo()
 {
@@ -124,4 +134,68 @@ void far terminar_Processo()
 		volta_dos();
 	transfer(p_aux->contexto, prim->contexto);
 }
+
+/*----------------------------------------------------------------------
+----------------------------------------------------------------------*/
+
+/*Comunicacao e sincronizacao entre processos---------------------------
+----------------------------------------------------------------------*/
+
+void far inicia_semaforo(SEMAFORO *sem, int n)
+{
+	sem->s = n;
+	sem->Q = NULL;
+}
+
+void far P(SEMAFORO *sem)
+{
+	PTR_DESC_PROC p_aux;
+
+	disable();
+	if(sem->s > 0)
+		sem->s--;
+	else
+	{
+		/*Fila vazia*/
+		if(sem->Q == NULL)
+			sem->Q = prim;
+		else
+		{
+			/*Encontra ultimo elemento da lista de bloqueados*/
+			p_aux = sem->Q;
+			while(p_aux->fila_sem != NULL)
+				p_aux = p_aux->fila_sem;
+
+			/*Insere BCP no final*/
+			p_aux->fila_sem = prim;
+		}
+		prim->fila_sem = NULL;
+		prim->estado = bloq_P;
+
+		/*Enviar controle para proximo processo ativo*/
+		p_aux = prim;
+		if( (prim = procura_prox_ativo()) == NULL)
+			volta_dos();
+		transfer(p_aux->contexto, prim->contexto);
+	}
+	enable();
+}
+
+void far V(SEMAFORO *sem)
+{
+	PTR_DESC_PROC p_aux;
+	disable();
+	if(sem->Q == NULL) sem->s++;
+	else
+	{
+		p_aux = sem->Q;
+		sem->Q = sem->Q->fila_sem;
+		p_aux->estado = ativo;
+		p_aux->fila_sem = NULL;
+	}
+	enable();
+}
+
+/*----------------------------------------------------------------------
+----------------------------------------------------------------------*/
 
