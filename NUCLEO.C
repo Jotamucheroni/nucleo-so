@@ -1,14 +1,29 @@
 #include <system.h>
 #include <stdio.h>
+#include <dos.h> far
 #include <string.h>
+
+#define MAXF 50
+
+typedef struct address{
+	char flag;
+	char nome_emissor[35];
+	char msg[25];
+	struct address *prox_msg;
+}mensagem;
+
+typedef mensagem *PTR_MENSAGEM;
 
 typedef struct desc_process
 {
 	char nome[35];
-	enum {ativo, bloq_P, terminado} estado;
+	enum {ativo, bloq_P, bloq_env, bloq_rec, terminado} estado;
 	PTR_DESC contexto;
+	int tam_fila; /*Tamanho da fila de mensagens*/
+	int qtd_msg_fila;
 	struct desc_process *prox_desc;
 	struct desc_process *fila_sem;
+	PTR_MENSAGEM  fila_msg_recebida;
 }DESCRITOR_PROC;
 
 typedef DESCRITOR_PROC *PTR_DESC_PROC;
@@ -59,14 +74,32 @@ void far volta_dos()
 	exit(0);
 }
 
-void far criar_Processo(void far (*end_proc)(), char nome[35])
+void far criar_Processo(void far (*end_proc)(), char nome[35], int maxfila)
 {
 	PTR_DESC_PROC p_aux, q_aux;
+	PTR_MENSAGEM r_aux;
 	p_aux = (PTR_DESC_PROC) malloc(sizeof(DESCRITOR_PROC));
 	strcpy(p_aux->nome, nome);
 	p_aux->estado = ativo;
 	p_aux->contexto = cria_desc();
 	newprocess(end_proc, p_aux->contexto);
+	/*Cria lista de mensagens vazia*/
+	if(maxfila < 1)
+		maxfila = 1;
+	else
+		if(maxfila > MAXF)
+			maxfila = MAXF;
+	p_aux->tam_fila = maxfila;
+	p_aux->qtd_msg_fila = 0;
+	r_aux = p_aux->fila_msg_recebida;
+	do
+	{
+		r_aux = (PTR_MENSAGEM) malloc(sizeof(mensagem));
+		r_aux->flag = 0;
+		r_aux = r_aux->prox_msg;
+		maxfila--;
+	}while(maxfila);
+	r_aux = p_aux->fila_msg_recebida;
 	/*Inserir no final da lista circular*/
 	if(prim == NULL)
 	{
@@ -141,6 +174,7 @@ void far terminar_Processo()
 /*Comunicacao e sincronizacao entre processos---------------------------
 ----------------------------------------------------------------------*/
 
+/*Semaforos*/
 void far inicia_semaforo(SEMAFORO *sem, int n)
 {
 	sem->s = n;
@@ -193,6 +227,74 @@ void far V(SEMAFORO *sem)
 		p_aux->estado = ativo;
 		p_aux->fila_sem = NULL;
 	}
+	enable();
+}
+
+/*Troca de mensagens*/
+int far envia(char *msg, char *destino)
+{
+	PTR_DESC_PROC p_aux;
+	PTR_MENSAGEM q_aux;
+
+	disable();
+	p_aux = prim;
+	while(p_aux->prox_desc != prim && strcmp(p_aux->nome, destino))
+		p_aux = p_aux->prox_desc;
+	if(strcmp(p_aux->nome, destino) != 0)
+	{
+		enable();
+		return 0;	/*Nao achou receptor*/
+	}
+	if(p_aux->qtd_msg_fila == p_aux->tam_fila)
+	{
+		enable();
+		return 1;	/*Fila do receptor cheia*/
+	}
+	q_aux = p_aux->fila_msg_recebida;
+	while(q_aux->flag)
+		q_aux = q_aux->prox_msg;
+	q_aux->flag = 1;
+	strcpy(q_aux->msg, msg);
+    strcpy(q_aux->nome_emissor, prim->nome);
+    printf("prim->nome: %s  q_aux->nome_emissor: %s\n", prim->nome, q_aux->nome_emissor);
+	p_aux->qtd_msg_fila++;
+	if(p_aux->estado == bloq_rec)
+		p_aux->estado = ativo;
+	prim->estado = bloq_env;
+	p_aux = prim;
+	if( (prim = procura_prox_ativo()) == NULL)
+			volta_dos();
+	transfer(p_aux->contexto, prim->contexto);
+	return 2;	/*Sucesso - retorna da proxima vez que o processo emissor for despachado*/
+}
+
+void far recebe(char *msg, char *emissor)
+{
+	PTR_DESC_PROC p_aux;
+	int cont = 0;
+	disable();
+	if(prim->qtd_msg_fila == 0)
+	{
+		prim->estado = bloq_rec;
+		p_aux = prim;
+		if( (prim = procura_prox_ativo()) == NULL)
+			volta_dos();
+		transfer(p_aux->contexto, prim->contexto);
+		disable();
+	}
+	strcpy(msg, prim->fila_msg_recebida->msg);
+	strcpy(emissor, prim->fila_msg_recebida->nome_emissor);
+	prim->fila_msg_recebida->flag = 0;
+	prim->qtd_msg_fila--;
+	prim->fila_msg_recebida = prim->fila_msg_recebida->prox_msg;
+	p_aux = prim;
+	while(strcmp(p_aux->nome, emissor) != 0 && cont < 20)
+	{	
+		p_aux = p_aux->prox_desc;
+		cont++;
+	}
+	volta_dos();
+	p_aux->estado = ativo;
 	enable();
 }
 

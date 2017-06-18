@@ -66,7 +66,7 @@ void far produtorB()
 
 void far consumidorA()
 {
-	unsigned espera, mensagem;
+	unsigned espera, Mensagem;
 	char continua = 1;
 
 	while(continua)
@@ -76,9 +76,9 @@ void far consumidorA()
 		P(&mutex);
 		if(contC < 100)
 		{
-			mensagem = buffer[contC%10];
-			fprintf(arq_saida, "ConsumidorA retirou %d da celula %d\n", mensagem, contC%10);
-			printf("ConsumidorA retirou %d da celula %d\n", mensagem, contC%10);
+			Mensagem = buffer[contC%10];
+			fprintf(arq_saida, "ConsumidorA retirou %d da celula %d\n", Mensagem, contC%10);
+			printf("ConsumidorA retirou %d da celula %d\n", Mensagem, contC%10);
 			contC++;
 		}
 		else
@@ -94,7 +94,7 @@ void far consumidorA()
 
 void far consumidorB()
 {
-	unsigned espera, mensagem;
+	unsigned espera, Mensagem;
 	char continua = 1;
 
 	while(continua)
@@ -104,9 +104,9 @@ void far consumidorB()
 		P(&mutex);
 		if(contC < 100)
 		{
-			mensagem = buffer[contC%10];
-			fprintf(arq_saida, "ConsumidorB retirou %d da celula %d\n", mensagem, contC%10);
-			printf("ConsumidorB retirou %d da celula %d\n", mensagem, contC%10);
+			Mensagem = buffer[contC%10];
+			fprintf(arq_saida, "ConsumidorB retirou %d da celula %d\n", Mensagem, contC%10);
+			printf("ConsumidorB retirou %d da celula %d\n", Mensagem, contC%10);
 			contC++;
 		}
 		else
