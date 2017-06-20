@@ -31,16 +31,16 @@ void far produtor()
 
 void far consumidor()
 {
-	unsigned espera, cont, mensagem;
+	unsigned espera, cont, Mensagem;
 
 	for(cont = 0; cont < 100; cont++)
 	{
 		/*Retira mensagem*/
 		P(&cheia);
 		P(&mutex);
-		mensagem = buffer[cont%10];
-		fprintf(arq_saida, "Consumidor retirou %d da celula %d\n", mensagem, cont%10);
-		printf("Consumidor retirou %d da celula %d\n", mensagem, cont%10);
+		Mensagem = buffer[cont%10];
+		fprintf(arq_saida, "Consumidor retirou %d da celula %d\n", Mensagem, cont%10);
+		printf("Consumidor retirou %d da celula %d\n", Mensagem, cont%10);
 		V(&mutex);
 		V(&vazia);
 		/*Consome mensagem*/
