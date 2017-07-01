@@ -104,6 +104,9 @@ void far criar_Processo(void far (*end_proc)(), char nome[35], int maxfila)
 		maxfila--;
 	}
 	/*Ultimo elemento aponta para o primeiro - fila circular*/
+	/*p_aux->fila_msg_recebida será considerado o ultimo elemento e nao o primeiro,
+	 *poupando um ponteiro e permitindo acessar diretamente tanto o ultimo quanto o
+	 *primeiro elemento da fila*/
 	r_aux->prox_msg = p_aux->fila_msg_recebida;
 	/*Inserir no final da lista circular*/
 	if(prim == NULL)
@@ -259,7 +262,7 @@ int far envia(char *msg, char *destino)
 		return 1;	
 	}
 	/*Procura espaco vazio na fila de mensagens do receptor*/
-	q_aux = p_aux->fila_msg_recebida;
+	q_aux = p_aux->fila_msg_recebida->prox_msg;
 	while(q_aux->flag)
 		q_aux = q_aux->prox_msg;
 	/*Escreve a mensagem no espaco vazio*/
@@ -280,7 +283,7 @@ int far envia(char *msg, char *destino)
 	return 2;	/*Sucesso - retorna da proxima vez que o processo emissor for despachado*/
 }
 
-void far recebe(char *msg, char *emissor)
+void far recebeQualquer(char *msg, char *emissor)
 {
 	PTR_DESC_PROC p_aux;
 	disable();
@@ -296,10 +299,10 @@ void far recebe(char *msg, char *emissor)
 		disable();
 	}
 	/*Copia o conteudo da primeira mensagem*/
-	strcpy(msg, prim->fila_msg_recebida->msg);
-	strcpy(emissor, prim->fila_msg_recebida->nome_emissor);
+	strcpy(msg, prim->fila_msg_recebida->prox_msg->msg);
+	strcpy(emissor, prim->fila_msg_recebida->prox_msg->nome_emissor);
 	/*Retira a mensagem lida da fila*/
-	prim->fila_msg_recebida->flag = 0;
+	prim->fila_msg_recebida->prox_msg->flag = 0;
 	prim->qtd_msg_fila--;
 	prim->fila_msg_recebida = prim->fila_msg_recebida->prox_msg;
 	/*Procura procura processo emissor e desbloqueia*/

@@ -16,7 +16,7 @@ void far emissorA()
 	{
 		/*Produz mensagem*/
 		espera = rand() % 3 + 1;
-		sleep(espera);
+		delay(espera*100);
 		/*Deposita mensagem*/
 		sprintf(Mensagem, "A%u", cont);
 		i = envia(Mensagem, "RA");
@@ -41,7 +41,7 @@ void far emissorB()
 	{
 		/*Produz mensagem*/
 		espera = rand() % 3 + 1;
-		sleep(espera);
+		delay(espera*100);
 		/*Deposita mensagem*/
 		sprintf(Mensagem, "B%u", cont);
 		i = envia(Mensagem, "RB");
@@ -66,7 +66,7 @@ void far emissorR()
 	{
 		/*Produz mensagem*/
 		espera = rand() % 4 + 1;
-		sleep(espera);
+		delay(espera*100);
 		if(espera % 2)
 			strcpy(Receptor, "RA");
 		else
@@ -94,12 +94,12 @@ void far receptorA()
 	for(cont = 0; cont < 25; cont++)
 	{
 		/*Retira mensagem*/
-		recebe(Mensagem, Emissor);
+		recebeQualquer(Mensagem, Emissor);
 		fprintf(arq_saida, "Receptor A recebeu %s do processo %s\n", Mensagem, Emissor);
 		printf("Receptor A recebeu %s do processo %s\n", Mensagem, Emissor);
 		/*Consome mensagem*/
 		espera = rand() % 3 + 1;
-		sleep(espera);
+		delay(espera*100);
 	}
 	terminar_Processo();
 }
@@ -112,12 +112,12 @@ void far receptorB()
 	for(cont = 0; cont < 25; cont++)
 	{
 		/*Retira mensagem*/
-		recebe(Mensagem, Emissor);
+		recebeQualquer(Mensagem, Emissor);
 		fprintf(arq_saida, "Receptor B recebeu %s do processo %s\n", Mensagem, Emissor);
 		printf("Receptor B recebeu %s do processo %s\n", Mensagem, Emissor);
 		/*Consome mensagem*/
 		espera = rand() % 3 + 1;
-		sleep(espera);
+		delay(espera*100);
 	}
 	terminar_Processo();
 }

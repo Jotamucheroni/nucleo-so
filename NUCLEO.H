@@ -77,7 +77,7 @@ extern void far V(SEMAFORO *sem);
 /*Troca de mensagens*/
 extern int far envia(char *msg, char *destino);
 
-extern void far recebe(char *msg, char *emissor);
+extern void far recebeQualquer(char *msg, char *emissor);
 
 /*----------------------------------------------------------------------
 ----------------------------------------------------------------------*/
