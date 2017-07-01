@@ -79,6 +79,8 @@ extern int far envia(char *msg, char *destino);
 
 extern void far recebeQualquer(char *msg, char *emissor);
 
+extern void far recebeEspecifico(char *msg, char *emissor);
+
 /*----------------------------------------------------------------------
 ----------------------------------------------------------------------*/
 

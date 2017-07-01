@@ -313,6 +313,66 @@ void far recebeQualquer(char *msg, char *emissor)
 	enable();
 }
 
+void far recebeEspecifico(char *msg, char *emissor)
+{
+	PTR_DESC_PROC p_aux;
+	PTR_MENSAGEM q_aux, r_aux;
+	char achou;
+	disable();
+	/*Verifica se a fila de mensagens esta vazia*/
+	if(prim->qtd_msg_fila == 0)
+	{
+		/*Bloqueia-se e passa controle para outro processo*/
+		prim->estado = bloq_rec;
+		p_aux = prim;
+		if( (prim = procura_prox_ativo()) == NULL)
+			volta_dos();
+		transfer(p_aux->contexto, prim->contexto);
+		disable();
+	}
+	/*Verifica se existe mensagem do emissor desejado*/
+	do
+	{
+		achou = 1;
+		q_aux = prim->fila_msg_recebida->prox_msg;
+		r_aux = prim->fila_msg_recebida;
+		while(q_aux->flag && q_aux != prim->fila_msg_recebida && strcmp(q_aux->nome_emissor, emissor) != 0)
+		{
+			r_aux = q_aux;
+			q_aux = q_aux->prox_msg;
+		}
+		if(q_aux->flag != 1 || strcmp(q_aux->nome_emissor, emissor) != 0)
+		{
+			achou = 0;
+			prim->estado = bloq_rec;
+			p_aux = prim;
+			if( (prim = procura_prox_ativo()) == NULL)
+				volta_dos();
+			transfer(p_aux->contexto, prim->contexto);
+			disable();
+		}
+	}while(achou == 0);
+	
+	/*Copia o conteudo da mensagem*/
+	strcpy(msg, q_aux->msg);
+	/*Retira a mensagem lida da fila*/
+	q_aux->flag = 0;
+	if(q_aux != prim->fila_msg_recebida)
+	{
+		r_aux->prox_msg = q_aux->prox_msg;
+		q_aux->prox_msg = prim->fila_msg_recebida->prox_msg;
+		prim->fila_msg_recebida->prox_msg = q_aux;
+		prim->fila_msg_recebida = q_aux;
+	}
+	prim->qtd_msg_fila--;
+	/*Procura procura processo emissor e desbloqueia*/
+	p_aux = prim;
+	while(strcmp(p_aux->nome, emissor) != 0)
+		p_aux = p_aux->prox_desc;
+	p_aux->estado = ativo;
+	enable();
+}
+
 /*----------------------------------------------------------------------
 ----------------------------------------------------------------------*/
 
