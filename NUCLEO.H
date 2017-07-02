@@ -2,10 +2,13 @@
 #include <stdio.h>
 #include <string.h>
 
+#define MAX_P 3
+
 typedef struct desc_process
 {
 	char nome[35];
 	enum {ativo, terminado} estado;
+	int prioridade;
 	PTR_DESC contexto;
 	struct desc_process *prox_desc;
 }DESCRITOR_PROC;
@@ -24,11 +27,14 @@ typedef union k{
 extern APONTA_REG_CRIT a;
 
 extern PTR_DESC_PROC prim;
+extern PTR_DESC_PROC fila_prior[4];
+extern int cont_fila_prior;
+
 extern PTR_DESC d_esc;
 
 extern void far volta_dos();
 
-extern void far criar_Processo(void far (*end_proc)(), char nome[35]);
+extern void far criar_Processo(void far (*end_proc)(), char nome[35], int prior);
 
 extern void far escalador();
 
