@@ -1,0 +1,19 @@
+Emerson Belancieir de Souza  RA: 151021971
+João Pedro Mucheroni Covolan RA: 151022593
+Lucas Fernandes Nogueira     RA: 151022658
+
+Arquivos da pasta Programa:
+
+-NUCLEO.C e NUCLEO.H: Arquivos do nucleo com semáforos e troca de mensagens, mas sem prioridade
+
+-NCLPRI.C e NCLPRI.H: Arquivos do nucleo com fila de prioridade
+
+-TBAS.C e TBAS.TXT: demonstração do funcionamento do nucleo básico (escalador) e arquivo de saída;
+
+-TSEM.C e TSEM.TXT: demonstração do funcionamento de semaforos e arquivo de saída;
+
+-TMSGQ.C e TMSGQ.TXT: demosntração do funcionamento da troca de mensagens com recebe não específico e arquivo de saída;
+
+-TMSGE.C TMSGE.TXT: demosntração do funcionamento da troca de mensagens com recebe específico e arquivo de saída;
+
+-TPRI.C TPRI.TXT: demosntração do funcionamento do núcleo com fila de prioridade e arquivo de saída;

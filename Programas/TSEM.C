@@ -1,3 +1,11 @@
+/*Emerson Belancieir de Souza  RA: 151021971 
+  Joao Pedro Mucheroni Covolan RA: 151022593
+  Lucas Fernandes Nogueira     RA: 151022658
+ * Esse programa demonstra o funcionamento do mecanismo de semaforo, atraves
+ * do problema do produtor consumidor. O consumidor leva um tempo aleatorio
+ * para tentar depositar no buffer, assim como o consumidor espera um tepo aleatorio 
+ * para tentar consumir a proxima mensagem, permitindo que seja possivel tanto que
+ * o produtor quanto o consumidor sejam bloqueados*/
 #include <stdio.h>
 #include <dos.h> far
 #include <stdlib.h>
@@ -12,7 +20,7 @@ void far produtor()
 {
 	unsigned espera, cont;
 
-	for(cont = 0; cont < 100; cont++)
+	for(cont = 0; cont < 20; cont++)
 	{
 		/*Produz mensagem*/
 		espera = rand() % 3 + 1;
@@ -33,7 +41,7 @@ void far consumidor()
 {
 	unsigned espera, cont, Mensagem;
 
-	for(cont = 0; cont < 100; cont++)
+	for(cont = 0; cont < 20; cont++)
 	{
 		/*Retira mensagem*/
 		P(&cheia);
@@ -56,9 +64,10 @@ main()
 	inicia_semaforo(&cheia, 0);
 	inicia_semaforo(&mutex, 1);
 	srand(time(NULL));
-	arq_saida = fopen("saida.txt", "w");
-	criar_Processo(produtor, "Processo Produtor");
-	criar_Processo(consumidor, "Processo Consumidor");
+	arq_saida = fopen("SSEM.txt", "w");
+	printf("Processando...\nVeja a saida apos o termino no arquivo SSEM.TXT\n");
+	criar_Processo(produtor, "Processo Produtor", 1);
+	criar_Processo(consumidor, "Processo Consumidor", 1);
 	dispara_sistema();
 }
 

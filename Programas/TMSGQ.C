@@ -1,3 +1,14 @@
+/*Emerson Belancieir de Souza  RA: 151021971
+  Joao Pedro Mucheroni Covolan RA: 151022593
+  Lucas Fernandes Nogueira     RA: 151022658
+ * Esse programa permite desmonstrar o funcionamento da troca de mesagens
+ * com recebe qualquer, ou seja, o processo receptor de consome a primeira
+ * mensagem em sua fila, independente do emissor. O processo emissor A envia 
+ * mensagens apenas para o Receptor A, o processor emissor B apenas para o B
+ * e o emissor R envia aleatoriamente para A e B. Ao consumir a mensagem, os
+ * receptores imprime no arquivo a mensagem que receberam e de qual receptor
+ * ela veio*/
+
 #include <stdio.h>
 #include <dos.h> far
 #include <stdlib.h>
@@ -125,7 +136,8 @@ void far receptorB()
 main()
 {
 	srand(time(NULL));
-	arq_saida = fopen("saidaM.txt", "w");
+	arq_saida = fopen("SMSGQ.txt", "w");
+	printf("Processando...\nVeja a saida apos o termino no arquivo SMSGQ.TXT\n");
 	criar_Processo(emissorA, "EA", 1);
 	criar_Processo(emissorB, "EB", 1);
 	criar_Processo(emissorR, "ER", 1);

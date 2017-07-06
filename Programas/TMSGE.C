@@ -1,3 +1,11 @@
+/*Emerson Belancieir de Souza  RA: 151021971
+  Joao Pedro Mucheroni Covolan RA: 151022593
+  Lucas Fernandes Nogueira     RA: 151022658
+ * Esse programa permite testar a troca de mensagem com recebe especifico,
+ * ou seja, o processo receptor procura em sua fila de mensagens a primeira
+ * mensagem de um receptor especifico. O processos emissor A e B enviam 10
+ * mensagens cad para o receptor, esperando um tempo aleatorio para enviar
+ * cada uma. O receptor recebe le alternadamente 5 mensagens de A e 5 de B*/
 #include <stdio.h>
 #include <dos.h> far
 #include <stdlib.h>
@@ -80,7 +88,8 @@ void far receptor()
 main()
 {
 	srand(time(NULL));
-	arq_saida = fopen("saidaM2.txt", "w");
+	arq_saida = fopen("SMSGE.txt", "w");
+	printf("Processando...\nVeja a saida apos o termino no arquivo SMSGE.TXT\n");
 	criar_Processo(emissorA, "EA", 1);
 	criar_Processo(emissorB, "EB", 1);
 	criar_Processo(receptor, "Recep", 50);
